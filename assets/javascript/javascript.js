@@ -48,56 +48,26 @@ database.ref().on("child_added", function (childSnapshot, prevChildKey) {
     var trainFirstDeparture = childSnapshot.val().serviceBegins;
     var trainFrequencyOfDeparture = childSnapshot.val().frequency;
 
-    var nextScheduledTime;
-    var eta;
+    // moment.js
+    var timeSinceServiceStart = moment().diff(moment(trainFirstDeparture, "HH:mm"), "minutes");
 
+    var timeSinceLastDeparture = timeSinceServiceStart % trainFrequencyOfDeparture;
+    var eta = timeSinceLastDeparture - trainFrequencyOfDeparture;
+
+    var nextScheduledArrival = moment().add(eta, "minutes").format("HH:mm");
+
+    // add to page HTML
     $("#tableBody").append(
-        "<tr><td>" + 
-        trainName + 
-        "</td><td>" + 
+        "<tr><td>" +
+        trainName +
+        "</td><td>" +
         trainDestination +
-        "</td><td>" + 
+        "</td><td>" +
         trainFrequencyOfDeparture +
-        "</td><td>" + 
-        nextScheduledTime + 
-        "</td><td>" + 
-        eta + 
+        "</td><td>" +
+        nextScheduledArrival +
+        "</td><td>" +
+        eta +
         "</td></tr>"
     );
 });
-
-
-
-
-
-/*
-// Assumptions
-var tFrequency = 3;
-
-// Time is 3:30 AM
-var firstTime = "03:30";
-
-// First Time (pushed back 1 year to make sure it comes before current time)
-var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
-console.log(firstTimeConverted);
-
-// Current Time
-var currentTime = moment();
-console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-// Difference between the times
-var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-console.log("DIFFERENCE IN TIME: " + diffTime);
-
-// Time apart (remainder)
-var tRemainder = diffTime % tFrequency;
-console.log(tRemainder);
-
-// Minute Until Train
-var tMinutesTillTrain = tFrequency - tRemainder;
-console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
-
-// Next Train
-var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-*/

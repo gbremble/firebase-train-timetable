@@ -49,10 +49,13 @@ database.ref().on("child_added", function (childSnapshot, prevChildKey) {
     var trainFrequencyOfDeparture = childSnapshot.val().frequency;
 
     // moment.js
-    var timeSinceServiceStart = moment().diff(moment(trainFirstDeparture, "HH:mm"), "minutes");
+    var firstDepartureConverted = moment(trainFirstDeparture, "HH:mm").subtract(1, "years");
+
+    var timeSinceServiceStart = moment().diff(moment(firstDepartureConverted), "minutes");
+    console.log("time since service start: " + timeSinceServiceStart);
 
     var timeSinceLastDeparture = timeSinceServiceStart % trainFrequencyOfDeparture;
-    var eta = timeSinceLastDeparture - trainFrequencyOfDeparture;
+    var eta = trainFrequencyOfDeparture - timeSinceLastDeparture;
 
     var nextScheduledArrival = moment().add(eta, "minutes").format("HH:mm");
 
